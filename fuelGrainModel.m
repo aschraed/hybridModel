@@ -1,6 +1,6 @@
-%% Version 2.1.0
+%% Version 2.1.1
 %% Step 1
-img = imread("doubleAnchorGrain.tif"); % Reads image and saves as variable
+img = imread('./Grains/doubleDoubleAnchor.tif'); % Reads image and saves as variable
 img = imclearborder(img);
 imshow(img);
 nPixX = size(img,1);
