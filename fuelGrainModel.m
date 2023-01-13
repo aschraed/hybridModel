@@ -1,6 +1,11 @@
-%% Version 2.1.1
+answer = questdlg("Do you have a screenshot or a black and white image?",'Selection','SS','BW','SS');
+[file,path] = uigetfile;
+img = imread(fullfile(path,file)); % Reads image and saves as variable
+if answer == "SS"
+img = imbinarize(imadjust(rgb2gray(img)));
+img = imfill(img);
+end
 %% Step 1
-img = imread('./Grains/doubleDoubleAnchor.tif'); % Reads image and saves as variable
 img = imclearborder(img);
 imshow(img);
 nPixX = size(img,1);
