@@ -62,10 +62,18 @@ function [X,Y] = plotBoundary(bwImg)
 outline = bwboundaries(bwImg);
 figure(1)
 hold on
-X = outline{1}(:, 2);
-Y = outline{1}(:, 1);
-plot(X, Y, 'r-', 'LineWidth', 1,'Color','y');
-hold off;
+if size(outline,1)>1
+    for n = 1:size(outline,1)
+        X = outline{n}(:, 2);
+        Y = outline{n}(:, 1);
+        plot(X, Y, 'r-', 'LineWidth', 1,'Color','y');
+    end
+else
+    X = outline{1}(:, 2);
+    Y = outline{1}(:, 1);
+    plot(X, Y, 'r-', 'LineWidth', 1,'Color','y');
+end
+hold off
 end
 
 function b = binary(img,t) % input: image and threshold value
