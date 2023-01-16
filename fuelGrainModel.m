@@ -16,8 +16,8 @@ dx = W/nPixX; % mm of the width of each pixel
 dy = H/nPixY; % mm of the height of each pixel
 rDot = 3; % Burn Regression
 rDotPix = rDot/dx; % Regression in pixels
-stepSize = .25; % How many seconds per step
-burnTime = 10; % sec
+stepSize = 1; % How many seconds per step
+burnTime = 5; % sec
 reg = rDotPix*stepSize; 
 steps = burnTime/stepSize;
 xPlot = 1:1:steps;
@@ -47,6 +47,8 @@ P(i) = sum( sqrt((diff(X)*dx).^2 + (diff(Y)*dy).^2));
 A(i) = sum(bwimg,"all")*dx*dy;
 img = bwimg*255; % Converts back to grayscale
 end
+dA = diff(A)./diff(xPlot);
+
 figure
 subplot(2,2,1)
 plot(xPlot,P);
@@ -58,6 +60,9 @@ plot(xPlot,A)
 title("Area")
 xlabel("Time");
 ylabel("Area (mm^2)");
+subplot(2,2,3)
+plot(xPlot(2:end),dA)
+title('Mass Flow Rate');
 
 function [X,Y] = plotBoundary(bwImg)
 outline = bwboundaries(bwImg);
