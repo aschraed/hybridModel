@@ -48,11 +48,12 @@ A(i) = sum(bwimg,"all")*dx*dy;
 img = bwimg*255; % Converts back to grayscale
 end
 figure
+subplot(2,2,1)
 plot(xPlot,P);
 title("Perimeter")
 xlabel("Time");
 ylabel("Perimeter (mm)");
-figure
+subplot(2,2,2)
 plot(xPlot,A)
 title("Area")
 xlabel("Time");
