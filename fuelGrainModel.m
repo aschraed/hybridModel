@@ -28,12 +28,6 @@ stepSize = inputs(3); % How many seconds per step
 burnTime = inputs(4); % sec
 reg = rDotPix*stepSize; 
 
-%andres fucked 
-% steps = burnTime/stepSize;
-% xPlot = 1:1:steps;
-% P = zeros(1,steps);
-% A = zeros(1,steps);
-
 steps = burnTime/stepSize;
 xPlot = linspace(1,burnTime,steps);
 P = zeros(1,steps);
@@ -84,7 +78,7 @@ xlabel("Time (s)");
 ylabel("Perimeter (mm)");
 Pavg = mean(P);
 yline(Pavg,'--');
-gravstr = sprintf('Pavg = %.1f',Pavg);
+gravstr = sprintf('P_{avg} = %.1f',Pavg);
 legend('P',gravstr);
 
 
@@ -96,25 +90,25 @@ xlabel("Time (s)");
 ylabel("Area (mm^2)");
 Aavg = mean(A);
 yline(Aavg,'--');
-gravstr = sprintf('Aavg = %.1f',Aavg);
+gravstr = sprintf('A_{avg} = %.1f',Aavg);
 legend('A',gravstr);
 
 
 subplot(2,2,3);
 plot(xPlot(2:end),mdot_f);
 grid on
-title('Fuel Mass Flow Rate vs Time');
+title('mdot_f vs Time');
 ylabel('$\dot{m_f}$ (kg/s)', 'Interpreter','latex');
 xlabel('Time (s)');
 mdot_f_avg = mean(mdot_f);
 yline(mdot_f_avg,'--');
 %legend('$\dot{m_f,avg}$ (kg/s)','mdot_avg', 'Interpreter','latex');
-gravstr = sprintf('Mavg = %.1f',mdot_f_avg);
-legend('$\dot{m_f,avg}$ (kg/s)',gravstr);
+gravstr = sprintf('${m_{f,avg}}$ = %.4f',mdot_f_avg);
+legend('$\dot{m_{f,avg}}$  (kg/s)',gravstr,'Interpreter','latex');
 %need to add an average m_dot average. 
 
 
-%% Step 8 Apporoximating mdot_o NICK WORKING SPACE
+%% Step 8 Apporoximating mdot_o 
 %designing to be around a constant oxidizer flux. 
 OF = 6.5;
 %min case (initial combustion)
@@ -136,21 +130,44 @@ end
 mdot_total = mdot_f+mdot_o_average;
 %shifting OF
 OFshifting = mdot_o_average./mdot_f;
-
+for i = 1:steps-1
+    OFshifting_average(i) = mean(OFshifting);
+end 
 
 %
 subplot(2,2,4)
-plot(xPlot(2:end),mdot_f,xPlot(2:end),mdot_o_average,xPlot(2:end),OFshifting);
+
+yyaxis left
+plot(xPlot(2:end),mdot_total,'-m',xPlot(2:end),mdot_f,'-c',xPlot(2:end),mdot_o_average,'-b');
+ylabel('$\dot{m}$ (kg/s)', 'Interpreter','latex');
+yyaxis right
+plot(xPlot(2:end),OFshifting,"Color","#D95319");
+ylabel('O/F');
+yline(OFshifting_average,'--');
 grid on
-title('mdot_tot, OF, mdot_o, mdot_f vs Time');
-ylabel('$\dot{m_f}$ (kg/s)', 'Interpreter','latex')
+title('mdot_{tot}, OF, mdot_o, mdot_f vs Time');
 xlabel('Time (s)')
-legend('mdot_f','mdot_o','OF');
+OFshifting_average_legend = mean(OFshifting_average);
+gravstr = sprintf('${OF_{avg}}$ = %.3f ',OFshifting_average_legend);
+legend('$\dot{m_{tot}}$','$\dot{m_f}$','$\dot{m_o}$','Shifting OF',gravstr, 'Interpreter','latex');
 
 % should have this for min and max founds for acceptable OF ratio 
 % yline([ymax ymin],'--',{'Max','Min'})
 % 
 % https://au.mathworks.com/help/matlab/ref/yline.html
+
+
+
+%Note;
+% you will get a different OF ratio based on the amount of time you run this calculator for. 
+% ie, if you run for 3 seconds, it finds mdot_o based on average mdot_f, therefore average is lower if you run for a small amount 
+%     of time. Only run to completion for accurateish things. 
+%     
+
+
+
+
+
 
 
 function [X,Y] = plotBoundary(bwImg)
