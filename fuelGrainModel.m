@@ -124,10 +124,10 @@ mdot_o_max = OF*mdot_f_max;
 %OF 
 mdot_f_average = mean(mdot_f);
 for i = 1:steps-1
-    mdot_o_average(i) = OF.*mdot_f_average;
-
+    mdot_o_average(i) = OF*mdot_f_average;
 end 
 mdot_total = mdot_f+mdot_o_average;
+
 %shifting OF
 OFshifting = mdot_o_average./mdot_f;
 for i = 1:steps-1
