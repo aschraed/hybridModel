@@ -56,21 +56,35 @@ A(i) = sum(bwimg,"all")*dx*dy;
 img = bwimg*255; % Converts back to grayscale
 end
 dA = diff(A)./diff(xPlot);
+%fixing Andres' jank af units
+dA = dA*1e-6;
+lengthCC = 0.3; %chamber length 300 mm, 12";
+dV = lengthCC*dA;
+
+rhoHTPB = 0.902*1000; %g/cm^3 == ml
+%1 g/cm^3 = 1e-6 kg/mm^3
+
+mdot_f = dV*rhoHTPB;
 
 figure
 subplot(2,2,1)
 plot(xPlot,P);
-title("Perimeter")
-xlabel("Time");
+grid on
+title("Perimeter vs Time")
+xlabel("Time (s)");
 ylabel("Perimeter (mm)");
 subplot(2,2,2)
 plot(xPlot,A)
-title("Area")
-xlabel("Time");
+grid on
+title("Area vs Time")
+xlabel("Time (s)");
 ylabel("Area (mm^2)");
 subplot(2,2,3)
-plot(xPlot(2:end),dA)
-title('Mass Flow Rate');
+plot(xPlot(2:end),mdot_f)
+grid on
+title('Fuel Mass Flow Rate vs Time');
+ylabel('$\dot{m_f}$ (kg/s)', 'Interpreter','latex')
+xlabel('Time (s)')
 
 function [X,Y] = plotBoundary(bwImg)
 outline = bwboundaries(bwImg);
