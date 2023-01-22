@@ -10,7 +10,7 @@ end
 prompt = {'Heigth and Width (mm): ','Regression Rate (mm/s):','Step Size (s):','Burn Time (s)'};
 dlgtitle = 'Inputs';
 dims = [1 20];
-definp = {'50', '3', '.5', '10'};
+definp = {'50', '2', '1', '10'};
 inputs = inputdlg(prompt,dlgtitle,dims,definp);
 inputs = str2double(inputs);
 
@@ -27,10 +27,18 @@ rDotPix = rDot/dx; % Regression in pixels
 stepSize = inputs(3); % How many seconds per step
 burnTime = inputs(4); % sec
 reg = rDotPix*stepSize; 
+
+%andres fucked 
+% steps = burnTime/stepSize;
+% xPlot = 1:1:steps;
+% P = zeros(1,steps);
+% A = zeros(1,steps);
+
 steps = burnTime/stepSize;
-xPlot = 1:1:steps;
+xPlot = linspace(1,burnTime,steps);
 P = zeros(1,steps);
 A = zeros(1,steps);
+
 %% Step 2
 figure(1) % Opens figure
 hold on
@@ -66,25 +74,84 @@ rhoHTPB = 0.902*1000; %g/cm^3 == ml
 
 mdot_f = dV*rhoHTPB;
 
-figure
+%% 
+figure('Name','Output Data','NumberTitle','off');
 subplot(2,2,1)
 plot(xPlot,P);
 grid on
-title("Perimeter vs Time")
+title("Perimeter vs Time");
 xlabel("Time (s)");
 ylabel("Perimeter (mm)");
+Pavg = mean(P);
+yline(Pavg,'--');
+gravstr = sprintf('Pavg = %.1f',Pavg);
+legend('P',gravstr);
+
+
 subplot(2,2,2)
 plot(xPlot,A)
 grid on
 title("Area vs Time")
 xlabel("Time (s)");
 ylabel("Area (mm^2)");
-subplot(2,2,3)
-plot(xPlot(2:end),mdot_f)
+Aavg = mean(A);
+yline(Aavg,'--');
+gravstr = sprintf('Aavg = %.1f',Aavg);
+legend('A',gravstr);
+
+
+subplot(2,2,3);
+plot(xPlot(2:end),mdot_f);
 grid on
 title('Fuel Mass Flow Rate vs Time');
+ylabel('$\dot{m_f}$ (kg/s)', 'Interpreter','latex');
+xlabel('Time (s)');
+mdot_f_avg = mean(mdot_f);
+yline(mdot_f_avg,'--');
+%legend('$\dot{m_f,avg}$ (kg/s)','mdot_avg', 'Interpreter','latex');
+gravstr = sprintf('Mavg = %.1f',mdot_f_avg);
+legend('$\dot{m_f,avg}$ (kg/s)',gravstr);
+%need to add an average m_dot average. 
+
+
+%% Step 8 Apporoximating mdot_o NICK WORKING SPACE
+%designing to be around a constant oxidizer flux. 
+OF = 6.5;
+%min case (initial combustion)
+mdot_f_min = mdot_f(1);
+mdot_o_min = OF*mdot_f_min;
+
+%max case (final)
+mdot_f_max = mdot_f(end);
+mdot_o_max = OF*mdot_f_max;
+
+%using mdotf average; 
+%average 
+%OF 
+mdot_f_average = mean(mdot_f);
+for i = 1:steps-1
+    mdot_o_average(i) = OF.*mdot_f_average;
+
+end 
+mdot_total = mdot_f+mdot_o_average;
+%shifting OF
+OFshifting = mdot_o_average./mdot_f;
+
+
+%
+subplot(2,2,4)
+plot(xPlot(2:end),mdot_f,xPlot(2:end),mdot_o_average,xPlot(2:end),OFshifting);
+grid on
+title('mdot_tot, OF, mdot_o, mdot_f vs Time');
 ylabel('$\dot{m_f}$ (kg/s)', 'Interpreter','latex')
 xlabel('Time (s)')
+legend('mdot_f','mdot_o','OF');
+
+% should have this for min and max founds for acceptable OF ratio 
+% yline([ymax ymin],'--',{'Max','Min'})
+% 
+% https://au.mathworks.com/help/matlab/ref/yline.html
+
 
 function [X,Y] = plotBoundary(bwImg)
 outline = bwboundaries(bwImg);
