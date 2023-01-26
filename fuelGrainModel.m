@@ -28,11 +28,13 @@ stepSize = inputs(3); % How many seconds per step
 burnTime = inputs(4); % sec
 reg = rDotPix*stepSize; 
 
+maskMatrix = masking(img,nPixY,nPixX);
+% imshow(img);
 steps = burnTime/stepSize;
 xPlot = linspace(1,burnTime,steps);
 P = zeros(1,steps);
 A = zeros(1,steps);
-
+img = double(img).*maskMatrix;
 %% Step 2
 figure(1) % Opens figure
 hold on
@@ -55,7 +57,8 @@ bwimg = binary(imgBlur,.1); % Changes gray pixels to white pixels, with certain 
 [X,Y] = plotBoundary(bwimg); % Plots outline of new image
 P(i) = sum( sqrt((diff(X)*dx).^2 + (diff(Y)*dy).^2));
 A(i) = sum(bwimg,"all")*dx*dy;
-img = bwimg*255; % Converts back to grayscale
+img = double(bwimg).*maskMatrix;
+img = img*255; % Converts back to grayscale
 end
 dA = diff(A)./diff(xPlot);
 %fixing Andres' jank af units
@@ -178,12 +181,12 @@ if size(outline,1)>1
     for n = 1:size(outline,1)
         X = outline{n}(:, 2);
         Y = outline{n}(:, 1);
-        plot(X, Y, 'r-', 'LineWidth', 1,'Color','y');
+        plot(X, Y, 'r-', 'LineWidth', 1,'Color','w');
     end
 else
     X = outline{1}(:, 2);
     Y = outline{1}(:, 1);
-    plot(X, Y, 'r-', 'LineWidth', 1,'Color','y');
+    plot(X, Y, 'r-', 'LineWidth', 1,'Color','w');
 end
 hold off
 end
@@ -191,4 +194,25 @@ end
 function b = binary(img,t) % input: image and threshold value
 imgG = mat2gray(img); % Changes image to grayscale from 0 (black) to 1 (white)
 b = imgG>t; % Changes any pixels greater than our threshold value to 1 (white), and the rest to 0 (black)
+end
+
+function mask = masking(image,numberOfYPixels,numberOfXPixels)
+image = imbinarize(image);
+[circlex,circley] = circle(numberOfXPixels/2,numberOfYPixels/2,numberOfYPixels/2);
+maskCircle = fill(circlex,circley,'k');
+[colGrid,rowGrid] = meshgrid(1:size(image,2),1:size(image,1));
+XV = maskCircle.XData';
+YV = maskCircle.YData';
+mask = inpolygon(colGrid,rowGrid,XV,YV);
+mask = reshape(mask,size(image));
+mask = double(mask);
+
+
+    function [xunit,yunit] = circle(x,y,r)
+    % figure(1)
+    hold on
+    th = 0:pi/50:2*pi;
+    xunit = r * cos(th) + x;
+    yunit = r * sin(th) + y;
+    end
 end
