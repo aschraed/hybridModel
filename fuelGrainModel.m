@@ -151,6 +151,9 @@ OFshifting_average_legend = mean(OFshifting_average);
 gravstr = sprintf('${OF_{avg}}$ = %.3f ',OFshifting_average_legend);
 legend('$\dot{m_{tot}}$','$\dot{m_f}$','$\dot{m_o}$','Shifting OF',gravstr, 'Interpreter','latex');
 
+output = [A;P;0,mdot_f; 0, mdot_o_average ;0, mdot_total];
+writematrix(output,'output.csv');
+
 % should have this for min and max founds for acceptable OF ratio 
 % yline([ymax ymin],'--',{'Max','Min'})
 % 
