@@ -1,3 +1,5 @@
+clear all;
+
 answer = questdlg("Do you have a screenshot or a black and white image?",'Selection','SS','BW','SS');
 file = imgetfile;
 img = imread(file); % Reads image and saves as variable
@@ -156,7 +158,27 @@ legend('$\dot{m_{tot}}$','$\dot{m_f}$','$\dot{m_o}$','Shifting OF',gravstr, 'Int
 % 
 % https://au.mathworks.com/help/matlab/ref/yline.html
 
+%while 
+file = num2str(file)
+file_trim = file(1:strfind(file,'.')-1)
+%while 1
+%    if strfind(file_trim,'\')==''
+%        break;
+%    end
+%    file_trim = file_trim(strfind(file,'\'):end)
+%end
+%  file_trim = str(1:strfind(str,'/')-1)
+%   break
 
+%filename = file+stepSize+burnTime+date+".csv"
+filename=date+".csv"
+Mat=[mdot_total;mdot_f;mdot_o_average];
+%[n,m]=size(Mat);
+writematrix(Mat,filename)
+
+%The above code will write the data for mdot total, mdot initial, mdot
+%final, shifting Oxidizer-Fuel Ratio, and Oxidizer-Fuel Ratio final into a
+%excel file
 
 %Note;
 % you will get a different OF ratio based on the amount of time you run this calculator for. 
