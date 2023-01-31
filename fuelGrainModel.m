@@ -46,9 +46,7 @@ img = double(img).*maskMatrix;
 maxArea = (pi*inputs(1).^2)/4;
 %% Step 2
 fig = figure(1); % Opens figure
-hold on
-axis on % Shows axes
-hold off
+
 %% Step 3
 bwimg = binary(img,0); % Converts image from grayscale to binary
 [X,Y] = plotBoundary(bwimg); % Plots the initial outline
