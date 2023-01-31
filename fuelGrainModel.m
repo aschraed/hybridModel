@@ -130,10 +130,15 @@ subplot(2,2,3);
 plot(xPlot,mdot_f);
 xlim([0 index]);
 grid on
+<<<<<<< HEAD
 %title('mdot_{f} v. time');
 title('$\dot{m_f}$ vs. Time','Interpreter','latex','FontWeight','bold');
 
 ylabel('$\dot{m_f}$ (kg/s)', 'Interpreter','latex');
+=======
+title('mdot_f vs Time');
+ylabel('$\dot{m_f}$ (kg/s)', 'Interpreter','latex'); %sup losers
+>>>>>>> f060b5aac2db263e26d9ccd6862f8c59d2e8f6c6
 xlabel('Time (s)');
 mdot_f_avg = mean(mdot_f);
 yline(mdot_f_avg,'--');
