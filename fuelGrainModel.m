@@ -5,6 +5,7 @@ answer = questdlg("Do you have a screenshot or a black and white image?",'Select
 file = imgetfile;
 [~,fileName,fileExt] = fileparts(file);
 gifName = sprintf('%s_%s.gif',fileName,datestr(now,'mm-dd-yyyy_HH-MM-SS'));
+fullFileName = fullfile(pwd,'gifs',gifName);
 img = imread(file); % Reads image and saves as variable
 if answer == "SS"
 img = imbinarize(imadjust(rgb2gray(img)));
@@ -44,7 +45,7 @@ img = double(img).*maskMatrix;
 %maxArea for masking 
 maxArea = (pi*inputs(1).^2)/4;
 %% Step 2
-fig = figure(1) % Opens figure
+fig = figure(1); % Opens figure
 hold on
 axis on % Shows axes
 hold off
@@ -73,7 +74,7 @@ A(i) = sum(bwimg,"all")*dx*dy;
 img = double(bwimg).*maskMatrix;
 img = img*255; % Converts back to grayscale
 
-exportgraphics(fig,gifName,"Append",true)
+exportgraphics(fig,fullFileName,"Append",true);
 end
 
 %% step 8 jank af system to find when to stop it 
