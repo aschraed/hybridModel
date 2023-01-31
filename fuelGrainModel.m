@@ -196,13 +196,6 @@ mdot_o_number = sprintf('$m_{o}$ = %.3f ',m_dot_o_average_legend);
 %mdot_o_number = sprintf('$\dot{m_{o}}$ = %.3f', m_dot_o_average_legend);
 legend('$\dot{m_{tot}}$','$\dot{m_f}$',mdot_o_number,'Shifting OF',gravstr, 'Interpreter','latex');
 
-output = [A;P;0,mdot_f; 0, mdot_o_average ;0, mdot_total];
-writematrix(output,'output.csv');
-
-% should have this for min and max founds for acceptable OF ratio 
-% yline([ymax ymin],'--',{'Max','Min'})
-% https://au.mathworks.com/help/matlab/ref/yline.html
-
 %Note;
 % you will get a different OF ratio based on the amount of time you run this calculator for. 
 % ie, if you run for 3 seconds, it finds mdot_o based on average mdot_f, therefore average is lower if you run for a small amount 
