@@ -1,16 +1,19 @@
+clear all 
+close all
+
 answer = questdlg("Do you have a screenshot or a black and white image?",'Selection','SS','BW','SS');
 file = imgetfile;
 img = imread(file); % Reads image and saves as variable
 if answer == "SS"
 img = imbinarize(imadjust(rgb2gray(img)));
-img = imfill(img);
+img = imfill(img);  
 end
 %% Step 1
 
 prompt = {'Heigth and Width (mm): ','Regression Rate (mm/s):','Step Size (s):','Burn Time (s)'};
 dlgtitle = 'Inputs';
 dims = [1 20];
-definp = {'50', '2', '1', '10'};
+definp = {'50', '2', '1', '20'};
 inputs = inputdlg(prompt,dlgtitle,dims,definp);
 inputs = str2double(inputs);
 
@@ -35,6 +38,9 @@ xPlot = linspace(1,burnTime,steps);
 P = zeros(1,steps);
 A = zeros(1,steps);
 img = double(img).*maskMatrix;
+
+%maxArea for masking 
+maxArea = (pi*inputs(1).^2)/4;
 %% Step 2
 figure(1) % Opens figure
 hold on
@@ -54,17 +60,40 @@ imgBlur = imfilter(img,h); % Blurs image using disk filter
 %% Step 6
 bwimg = binary(imgBlur,.1); % Changes gray pixels to white pixels, with certain % thresholding
 %% Step 7
+
+%%step 7.1 
+%check to see if you have met/exceeded the max area (size of CC).
+
+% step7.2, continue with funciton 
 [X,Y] = plotBoundary(bwimg); % Plots outline of new image
 P(i) = sum( sqrt((diff(X)*dx).^2 + (diff(Y)*dy).^2));
 A(i) = sum(bwimg,"all")*dx*dy;
 img = double(bwimg).*maskMatrix;
 img = img*255; % Converts back to grayscale
+
 end
+
+%% step 8 jank af system to find when to stop it 
+for i = 1:length(A)-1
+    if A(i) == A(i+1)
+        index = i;
+        cant = "mega";
+        break
+    end 
+end 
+
+diffA = diff(A);
 dA = diff(A)./diff(xPlot);
+
+A = A(1:index);
+P = P(1:index);
+xPlot = xPlot(1:index);
+dA = dA(1:index);
+
 %fixing Andres' jank af units
-dA = dA*1e-6;
+dA = dA.*1e-6;
 lengthCC = 0.3; %chamber length 300 mm, 12";
-dV = lengthCC*dA;
+dV = lengthCC.*dA;
 
 rhoHTPB = 0.902*1000; %g/cm^3 == ml
 %1 g/cm^3 = 1e-6 kg/mm^3
@@ -75,8 +104,9 @@ mdot_f = dV*rhoHTPB;
 figure('Name','Output Data','NumberTitle','off');
 subplot(2,2,1)
 plot(xPlot,P);
+xlim([0 index]);
 grid on
-title("Perimeter vs Time");
+title('Perimeter vs Time','Interpreter','latex','FontWeight','bold');
 xlabel("Time (s)");
 ylabel("Perimeter (mm)");
 Pavg = mean(P);
@@ -84,11 +114,11 @@ yline(Pavg,'--');
 gravstr = sprintf('P_{avg} = %.1f',Pavg);
 legend('P',gravstr);
 
-
 subplot(2,2,2)
-plot(xPlot,A)
+plot(xPlot,A);
+xlim([0 index]);
 grid on
-title("Area vs Time")
+title('Area vs Time','Interpreter','latex','FontWeight','bold');
 xlabel("Time (s)");
 ylabel("Area (mm^2)");
 Aavg = mean(A);
@@ -96,11 +126,13 @@ yline(Aavg,'--');
 gravstr = sprintf('A_{avg} = %.1f',Aavg);
 legend('A',gravstr);
 
-
 subplot(2,2,3);
-plot(xPlot(2:end),mdot_f);
+plot(xPlot,mdot_f);
+xlim([0 index]);
 grid on
-title('mdot_f vs Time');
+%title('mdot_{f} v. time');
+title('$\dot{m_f}$ vs. Time','Interpreter','latex','FontWeight','bold');
+
 ylabel('$\dot{m_f}$ (kg/s)', 'Interpreter','latex');
 xlabel('Time (s)');
 mdot_f_avg = mean(mdot_f);
@@ -108,8 +140,9 @@ yline(mdot_f_avg,'--');
 %legend('$\dot{m_f,avg}$ (kg/s)','mdot_avg', 'Interpreter','latex');
 gravstr = sprintf('${m_{f,avg}}$ = %.4f',mdot_f_avg);
 legend('$\dot{m_{f,avg}}$  (kg/s)',gravstr,'Interpreter','latex');
-%need to add an average m_dot average. 
-
+%need to add an average m_dot average.
+% [t,s] = title('mDot Line','Slope = 1, y-Intercept = 0',...
+%     'Color','blue');
 
 %% Step 8 Apporoximating mdot_o 
 %designing to be around a constant oxidizer flux. 
@@ -126,52 +159,51 @@ mdot_o_max = OF*mdot_f_max;
 %average 
 %OF 
 mdot_f_average = mean(mdot_f);
-for i = 1:steps-1
+for i = 1:length(mdot_f)
     mdot_o_average(i) = OF*mdot_f_average;
 end 
 mdot_total = mdot_f+mdot_o_average;
 
 %shifting OF
 OFshifting = mdot_o_average./mdot_f;
-for i = 1:steps-1
-    OFshifting_average(i) = mean(OFshifting);
+OFshifting_trimmmed = OFshifting(1:end-1);
+for i = 1:length(mdot_f)
+    OFshifting_average(i) = mean(OFshifting_trimmmed);
 end 
 
 %
 subplot(2,2,4)
 
 yyaxis left
-plot(xPlot(2:end),mdot_total,'-m',xPlot(2:end),mdot_f,'-c',xPlot(2:end),mdot_o_average,'-b');
+plot(xPlot,mdot_total,'-m',xPlot,mdot_f,'-c',xPlot,mdot_o_average,'-b');
 ylabel('$\dot{m}$ (kg/s)', 'Interpreter','latex');
 yyaxis right
-plot(xPlot(2:end),OFshifting,"Color","#D95319");
+plot(xPlot,OFshifting,"Color","#D95319");
 ylabel('O/F');
 yline(OFshifting_average,'--');
+xlim([0 index]);
 grid on
-title('mdot_{tot}, OF, mdot_o, mdot_f vs Time');
+title('$\dot{m_{tot}}$ vs. OF vs. $\dot{m_{o}}$ vs. $\dot{m_{f}}$ vs. Time','Interpreter','latex','FontWeight','bold');
+
+%title('mdot_{tot}, OF, mdot_o, mdot_f vs Time');
 xlabel('Time (s)')
-OFshifting_average_legend = mean(OFshifting_average);
+OFshifting_average_legend = mean(OFshifting_average); %this feature sucks and idk what to do about it. 
 gravstr = sprintf('${OF_{avg}}$ = %.3f ',OFshifting_average_legend);
-legend('$\dot{m_{tot}}$','$\dot{m_f}$','$\dot{m_o}$','Shifting OF',gravstr, 'Interpreter','latex');
+m_dot_o_average_legend = mean(mdot_o_average);
+mdot_o_number = sprintf('$m_{o}$ = %.3f ',m_dot_o_average_legend);
+
+%mdot_o_number = sprintf('$\dot{m_{o}}$ = %.3f', m_dot_o_average_legend);
+legend('$\dot{m_{tot}}$','$\dot{m_f}$',mdot_o_number,'Shifting OF',gravstr, 'Interpreter','latex');
 
 % should have this for min and max founds for acceptable OF ratio 
 % yline([ymax ymin],'--',{'Max','Min'})
-% 
 % https://au.mathworks.com/help/matlab/ref/yline.html
-
-
 
 %Note;
 % you will get a different OF ratio based on the amount of time you run this calculator for. 
 % ie, if you run for 3 seconds, it finds mdot_o based on average mdot_f, therefore average is lower if you run for a small amount 
 %     of time. Only run to completion for accurateish things. 
 %     
-
-
-
-
-
-
 
 function [X,Y] = plotBoundary(bwImg)
 outline = bwboundaries(bwImg);
@@ -189,6 +221,7 @@ else
     plot(X, Y, 'r-', 'LineWidth', 1,'Color','w');
 end
 hold off
+
 end
 
 function b = binary(img,t) % input: image and threshold value
@@ -206,7 +239,6 @@ YV = maskCircle.YData';
 mask = inpolygon(colGrid,rowGrid,XV,YV);
 mask = reshape(mask,size(image));
 mask = double(mask);
-
 
     function [xunit,yunit] = circle(x,y,r)
     % figure(1)
