@@ -34,7 +34,7 @@ stepSize = inputs(3); % How many seconds per step
 burnTime = inputs(4); % sec
 reg = rDotPix*stepSize; 
 
-maskMatrix = masking(img,nPixY,nPixX);
+maskMatrix = masking(img,nPixX,nPixY);
 % imshow(img);
 steps = burnTime/stepSize;
 xPlot = linspace(1,burnTime,steps);
@@ -214,29 +214,25 @@ else
     plot(X, Y, 'r-', 'LineWidth', 1,'Color','w');
 end
 hold off
-
 end
 
 function b = binary(img,t) % input: image and threshold value
 imgG = mat2gray(img); % Changes image to grayscale from 0 (black) to 1 (white)
 b = imgG>t; % Changes any pixels greater than our threshold value to 1 (white), and the rest to 0 (black)
 end
-
-function mask = masking(image,numberOfYPixels,numberOfXPixels)
-image = imbinarize(image);
-[circlex,circley] = circle(numberOfXPixels/2,numberOfYPixels/2,numberOfYPixels/2);
-maskCircle = fill(circlex,circley,'k');
+%maybe an issue with radius? maybe number of pixels.
+function mask = masking(image,numberOfXPixels,numberOfYPixels)
+image = imbinarize(image);%changes input image to BW 
+[circlex,circley] = circle(numberOfXPixels/2,numberOfYPixels/2,numberOfYPixels/2);%uses circle function to get x & y values of FG
 [colGrid,rowGrid] = meshgrid(1:size(image,2),1:size(image,1));
-XV = maskCircle.XData';
-YV = maskCircle.YData';
-mask = inpolygon(colGrid,rowGrid,XV,YV);
+mask = inpolygon(colGrid,rowGrid,circlex,circley);
 mask = reshape(mask,size(image));
 mask = double(mask);
 
     function [xunit,yunit] = circle(x,y,r)
     % figure(1)
     hold on
-    th = 0:pi/50:2*pi;
+    th = 0:pi/100:2*pi;
     xunit = r * cos(th) + x;
     yunit = r * sin(th) + y;
     end
