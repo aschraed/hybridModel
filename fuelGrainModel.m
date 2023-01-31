@@ -101,7 +101,7 @@ subplot(2,2,3);
 plot(xPlot(2:end),mdot_f);
 grid on
 title('mdot_f vs Time');
-ylabel('$\dot{m_f}$ (kg/s)', 'Interpreter','latex');
+ylabel('$\dot{m_f}$ (kg/s)', 'Interpreter','latex'); %hello there
 xlabel('Time (s)');
 mdot_f_avg = mean(mdot_f);
 yline(mdot_f_avg,'--');
