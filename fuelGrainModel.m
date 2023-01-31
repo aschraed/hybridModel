@@ -186,21 +186,13 @@ xlim([0 index]);
 grid on
 title('$\dot{m_{tot}}$ vs. OF vs. $\dot{m_{o}}$ vs. $\dot{m_{f}}$ vs. Time','Interpreter','latex','FontWeight','bold');
 
-%title('mdot_{tot}, OF, mdot_o, mdot_f vs Time');
 xlabel('Time (s)')
 OFshifting_average_legend = mean(OFshifting_average); %this feature sucks and idk what to do about it. 
 gravstr = sprintf('${OF_{avg}}$ = %.3f ',OFshifting_average_legend);
 m_dot_o_average_legend = mean(mdot_o_average);
 mdot_o_number = sprintf('$m_{o}$ = %.3f ',m_dot_o_average_legend);
 
-%mdot_o_number = sprintf('$\dot{m_{o}}$ = %.3f', m_dot_o_average_legend);
 legend('$\dot{m_{tot}}$','$\dot{m_f}$',mdot_o_number,'Shifting OF',gravstr, 'Interpreter','latex');
-
-%Note;
-% you will get a different OF ratio based on the amount of time you run this calculator for. 
-% ie, if you run for 3 seconds, it finds mdot_o based on average mdot_f, therefore average is lower if you run for a small amount 
-%     of time. Only run to completion for accurateish things. 
-%     
 
 function [X,Y] = plotBoundary(bwImg)
 outline = bwboundaries(bwImg);
