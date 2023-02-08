@@ -32,11 +32,11 @@ rDot = inputs(2); % Burn Regression
 rDotPix = rDot/dx; % Regression in pixels
 stepSize = inputs(3); % How many seconds per step
 burnTime = inputs(4); % sec
-reg = rDotPix*stepSize; 
+reg = rDotPix/stepSize; 
 
 maskMatrix = masking(img,nPixX,nPixY);
 % imshow(img);
-steps = burnTime/stepSize;
+steps = burnTime*stepSize;
 xPlot = linspace(1,burnTime,steps);
 P = zeros(1,steps);
 A = zeros(1,steps);
@@ -82,6 +82,7 @@ for i = 1:length(A)-1
         cant = "mega";
         break
     end 
+    index = i;
 end 
 
 diffA = diff(A);
@@ -108,9 +109,9 @@ subplot(2,2,1)
 plot(xPlot,P);
 xlim([0 index]);
 grid on
-title('Perimeter vs Time','Interpreter','latex','FontWeight','bold');
-xlabel("Time (s)");
-ylabel("Perimeter (mm)");
+title("Perimeter vs Time",'fontname','Times New Roman');
+xlabel("Time (s)",'fontname','Times New Roman');
+ylabel("Perimeter (mm)",'fontname','Times New Roman');
 Pavg = mean(P);
 yline(Pavg,'--');
 gravstr = sprintf('P_{avg} = %.1f',Pavg);
@@ -120,13 +121,14 @@ subplot(2,2,2)
 plot(xPlot,A);
 xlim([0 index]);
 grid on
-title('Area vs Time','Interpreter','latex','FontWeight','bold');
+title("Area vs Time",'fontname','Times New Roman');
 xlabel("Time (s)");
-ylabel("Area (mm^2)");
+ylabel("Area (mm^2)",'fontname','Times New Roman');
 Aavg = mean(A);
 yline(Aavg,'--');
+set(gca,'fontname','Times New Roman');
 gravstr = sprintf('A_{avg} = %.1f',Aavg);
-legend('A',gravstr);
+legend('A',gravstr,'fontname','Times New Roman');
 
 subplot(2,2,3);
 plot(xPlot,mdot_f);
@@ -135,14 +137,14 @@ grid on
 %title('mdot_{f} v. time');
 title('$\dot{m_f}$ vs. Time','Interpreter','latex','FontWeight','bold');
 
-title('$\dot{m_f}$ vs. Time','Interpreter','latex','FontWeight','bold');
-ylabel('$\dot{m_f}$ (kg/s)', 'Interpreter','latex'); %sup losers
-xlabel('Time (s)');
+title('\boldmath{$\dot{m}_f$}\textbf{ vs Time}', 'Interpreter','latex');
+ylabel('$\dot{m}_f$ (kg/s)', 'Interpreter','latex'); %sup losers
+xlabel('Time (s)','fontname','Times New Roman');
 mdot_f_avg = mean(mdot_f);
 yline(mdot_f_avg,'--');
-%legend('$\dot{m_f,avg}$ (kg/s)','mdot_avg', 'Interpreter','latex');
+set(gca,'fontname','Times New Roman');
 gravstr = sprintf('${m_{f,avg}}$ = %.4f',mdot_f_avg);
-legend('$\dot{m_{f,avg}}$  (kg/s)',gravstr,'Interpreter','latex');
+legend('$\dot{m}_{f,avg}$  (kg/s)',gravstr,'Interpreter','latex');
 %need to add an average m_dot average.
 % [t,s] = title('mDot Line','Slope = 1, y-Intercept = 0',...
 %     'Color','blue');
@@ -182,18 +184,18 @@ plot(xPlot,mdot_total,'-m',xPlot,mdot_f,'-c',xPlot,mdot_o_average,'-b');
 ylabel('$\dot{m}$ (kg/s)', 'Interpreter','latex');
 yyaxis right
 plot(xPlot,OFshifting,"Color","#D95319");
-ylabel('O/F');
+ylabel('O/F','fontname','Times New Roman');
 yline(OFshifting_average,'--');
 xlim([0 index]);
 grid on
-title('$\dot{m_{tot}}$ vs. OF vs. $\dot{m_{o}}$ vs. $\dot{m_{f}}$ vs. Time','Interpreter','latex','FontWeight','bold');
+title('{\boldmath$\dot{m}_{tot}$}\textbf{, }\boldmath{$\dot{m}_f$}\textbf{, }\boldmath{$\dot{m}_o$}\textbf{, OF vs Time}','Interpreter','latex');
 
-xlabel('Time (s)')
+xlabel('Time (s)','fontname','Times New Roman')
 OFshifting_average_legend = mean(OFshifting_average); %this feature sucks and idk what to do about it. 
+set(gca,'fontname','Times New Roman');
 gravstr = sprintf('${OF_{avg}}$ = %.3f ',OFshifting_average_legend);
 m_dot_o_average_legend = mean(mdot_o_average);
 mdot_o_number = sprintf('$m_{o}$ = %.3f ',m_dot_o_average_legend);
-
 legend('$\dot{m_{tot}}$','$\dot{m_f}$',mdot_o_number,'Shifting OF',gravstr, 'Interpreter','latex');
 
 function [X,Y] = plotBoundary(bwImg)
