@@ -7,10 +7,17 @@ file = imgetfile;
 gifName = sprintf('%s_%s.gif',fileName,datestr(now,'mm-dd-yyyy_HH-MM-SS'));
 fullFileName = fullfile(pwd,'gifs',gifName);
 img = imread(file); % Reads image and saves as variable
-if answer == "SS"
-img = imbinarize(imadjust(rgb2gray(img)));
-img = imfill(img);  
+sz = size(img);
+sz = size(sz);
+if sz(2) > 2
+    img = imbinarize(imadjust(rgb2gray(img)));
 end
+
+if answer == "SS"
+    img = imbinarize(imadjust(rgb2gray(img)));
+    img = imfill(img);  
+end
+img = img.*1;
 %% Step 1
 
 prompt = {'Heigth and Width (mm): ','Regression Rate (mm/s):','Step Size (s):','Burn Time (s)'};
