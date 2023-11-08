@@ -20,7 +20,7 @@ end
 img = img.*1;
 %% Step 1
 
-prompt = {'Heigth and Width (mm): ','Regression Rate (mm/s):','Step Size (s):','Burn Time (s)'};
+prompt = {'Height and Width (mm): ','Regression Rate (mm/s):','Step Size (s):','Burn Time (s)'};
 dlgtitle = 'Inputs';
 dims = [1 20];
 definp = {'50', '2', '1', '20'};

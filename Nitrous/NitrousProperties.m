@@ -1,5 +1,5 @@
 % thermophysical properties of nitrous on the saturation line white paper
-% range of applicability: -90C to 36C
+% range of applicability: -90C to 36C (-130F to 96.8F)
 % can only model based on temperature (since equations are based off temp, 
 % too complex to derive temp from pressure, etc)
 
@@ -40,6 +40,7 @@ hVaporization = (hV(1)-hL(1)) + (hV(2)-hL(2))*(1-Tr)^(1/3) + (hV(3)-hL(3))*(1-Tr
 liquidSpecHeat = cL(1)*(1 + cL(2)*(1-Tr)^(-1) + cL(3)*(1-Tr) + cL(4)*(1-Tr)^2 + cL(5)*(1-Tr)^3);
 vaporSpecHeat = cV(1)*(1 + cV(2)*(1-Tr)^(-2/3) + cV(3)*(1-Tr)^(-1/3) + cV(4)*(1-Tr)^(1/3) + cV(5)*(1-Tr)^(2/3));
 
-N2O = [liquidDensity vaporDensity vaporPressure hVaporization liquidSpecHeat vaporSpecHeat];
+% [kg/m^3, kg/m^3, psi, kJ/kg, kJ/kg*K, kJ,kg*K]
+N2O = [liquidDensity vaporDensity vaporPressure/6.89475 hVaporization liquidSpecHeat vaporSpecHeat];
 
 end

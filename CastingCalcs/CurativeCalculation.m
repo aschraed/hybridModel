@@ -32,3 +32,5 @@ indRatSave = linspace(0,1,dIndRat);
 for n = 1:dIndRat
     
 end
+
+clear all
