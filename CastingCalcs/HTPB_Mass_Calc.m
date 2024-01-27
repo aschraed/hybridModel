@@ -4,7 +4,7 @@
 % complex
 
 %% composition parameters
-per_MDI = .14; % percentage of resin obtained from CurativeCalculation
+per_MDI = .14; % percentage of curative obtained from CurativeCalculation
 per_R45 = 1 - per_MDI;
 
 % densities of resin and curative from Rocket Motor Components TDS
@@ -55,4 +55,4 @@ fprintf('Mass MDI: %.3f g \n', xsave(4))
 % disp("Combined Density (g/cm^3), Total Mass (g), Mass Resin (g), Mass PAPI (g)")
 % disp(xsave)
 
-clear all
+clear allclc
