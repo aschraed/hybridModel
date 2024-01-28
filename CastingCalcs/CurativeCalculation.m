@@ -5,6 +5,8 @@
 % binder with an isocyanate compound (NCO) of the curative.
 
 % EW = Effective Weight listed on the MDSs
+% Default values are the Effective Weights listed on the MDS of
+% Resin/Curative from RCS
 prompt = {'EW of Resin (OH Eq. Wt.): ', 'EW of Curative (NCO Eq. Wt): ', 'Index Ratio (0-1, 1 is full cure)'};
 dlgtitle = 'Curative Calculation: Material Properties';
 dims = [1 60];
